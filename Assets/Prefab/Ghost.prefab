@@ -44,8 +44,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84fd75159d7c4b37bf625e67481c66ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Speed: 1
   Animator: {fileID: 8220719061670175021}
+  Speed: 1
+  patrolRadius: 1
+  minRangeChase: 8
+  maxRangeChase: 10
+  isPatroling: 1
+  patrolPoints:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!1 &8220719061670175020
 GameObject:
   m_ObjectHideFlags: 0
@@ -117,7 +125,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: 1205868866586659964, guid: beab2f781614c4f418bc9519302f10ea, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0

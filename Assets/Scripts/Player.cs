@@ -59,7 +59,7 @@ public class Player : MonoBehaviour, IMovable
 
     private void SetDirectionsFromInput()
     {
-        transformDirection = Vector3.zero;
+        transformDirection = Vector2.zero;
         if (Input.GetKey(KeyCode.W))
         {
             ConfigureDirections(Direction.Up, Vector3.up);
