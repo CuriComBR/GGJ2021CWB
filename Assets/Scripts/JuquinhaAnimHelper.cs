@@ -11,7 +11,7 @@ public class JuquinhaAnimHelper
 
     public enum Direction
     {
-        DOWN = 0, RiGHT = 1, UP = 2, LEFT = 3
+        DOWN = 0, RIGHT = 1, UP = 2, LEFT = 3
     }
 
     public JuquinhaAnimHelper(Direction startDirection, Animator anim)
