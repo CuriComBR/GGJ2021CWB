@@ -18,6 +18,10 @@ public class Ghost : MonoBehaviour, IMovable
     [SerializeField] private bool isPatroling;
     [SerializeField] private Transform[] patrolPoints;
 
+    [Header("Attack Settings")]
+    [SerializeField] private float attackRange = 0.5f;
+    [SerializeField] private float freezeTime = 5f;
+
     private int patrolIndex = 0;
     private bool reversePatrol = false;
 
@@ -54,14 +58,28 @@ public class Ghost : MonoBehaviour, IMovable
 
     private void Chase()
     {
-        if (isPatroling && Vector2.Distance(transform.position, player.transform.position) > maxRangeChase)
+        float distance = Vector2.Distance(transform.position, player.transform.position);
+
+        if(isPatroling && distance > maxRangeChase)
         {
             Patrol();
         }
         else
         {
-            Vector2 chaseDirection = player.transform.position - transform.position;
-            ConfigureDirections(GetFacingDirectionByTargetPosition(chaseDirection), chaseDirection.normalized);
+            if(distance <= attackRange)
+            {
+                player.Freeze(freezeTime);
+                //Attack anim?
+                //Particles
+                animationController.SetTarget(null);
+                movementController.SetTarget(null);
+                Destroy(gameObject);
+            }
+            else
+            {
+                Vector2 chaseDirection = player.transform.position - transform.position;
+                ConfigureDirections(GetFacingDirectionByTargetPosition(chaseDirection), chaseDirection.normalized);
+            }
         }
     }
 
@@ -119,18 +137,6 @@ public class Ghost : MonoBehaviour, IMovable
         }
 
         return fDirection;
-    }
-
-    private void OnDrawGizmos()
-    {
-    
-    }
-
-   
-    private void SetDirectionsFromInput()
-    {
-        
-        ConfigureDirections(Direction.Left, Vector3.left);
     }
 
     public bool IsWalking()

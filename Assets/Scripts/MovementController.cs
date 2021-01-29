@@ -12,7 +12,10 @@ public class MovementController : MonoBehaviour
 
     private void Update()
     {
-        Transform targetTransform = target.GetTransform();
-        targetTransform.position += Time.deltaTime * target.GetSpeed() * target.GetTransformDirection();
+        if (target != null)
+        {
+            Transform targetTransform = target.GetTransform();
+            targetTransform.position += Time.deltaTime * target.GetSpeed() * target.GetTransformDirection();
+        }
     }
 }
