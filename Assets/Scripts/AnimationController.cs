@@ -14,6 +14,6 @@ public class AnimationController : MonoBehaviour
     {
         Animator animator = target.GetAnimator();
         animator.SetInteger("direction", (int) target.GetFacingDirection());
-        animator.SetBool("walking", target.IsWalking());
+        animator.SetBool("isWalking", target.IsWalking());
     }
 }
