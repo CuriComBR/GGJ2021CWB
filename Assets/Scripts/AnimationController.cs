@@ -13,7 +13,7 @@ public class AnimationController : MonoBehaviour
     private void Update()
     {
         Animator animator = target.GetAnimator();
-        animator.SetInteger("direction", (int) target.GetDirection());
+        animator.SetInteger("direction", (int) target.GetFacingDirection());
         animator.SetBool("walking", target.IsWalking());
     }
 }

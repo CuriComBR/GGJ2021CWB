@@ -11,17 +11,20 @@ public class Player : MonoBehaviour, IMovable
     private Direction facingDirection = Direction.Down;
 
     private AnimationController animationController;
+    private MovementController movementController;
 
     private void Awake()
     {
         animationController = gameObject.AddComponent<AnimationController>();
         animationController.SetTarget(this);
+
+        movementController = gameObject.AddComponent<MovementController>();
+        movementController.SetTarget(this);
     }
 
     private void Update()
     {
         SetDirectionsFromInput();
-        Move(transformDirection);
     }
     
     public bool IsWalking()
@@ -29,9 +32,14 @@ public class Player : MonoBehaviour, IMovable
         return !transformDirection.Equals(Vector3.zero);
     }
 
-    public Direction GetDirection()
+    public Direction GetFacingDirection()
     {
         return facingDirection;
+    }
+
+    public Vector3 GetTransformDirection()
+    {
+        return transformDirection;
     }
 
     public Animator GetAnimator()
@@ -42,6 +50,11 @@ public class Player : MonoBehaviour, IMovable
     public Transform GetTransform()
     {
         return transform;
+    }
+
+    public float GetSpeed()
+    {
+        return Speed;
     }
 
     private void Move(Vector3 direction)
