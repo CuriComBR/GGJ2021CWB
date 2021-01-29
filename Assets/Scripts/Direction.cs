@@ -1,7 +1,7 @@
-﻿public enum Direction
+﻿public enum Direction: int
 {
-    DOWN = 0,
-    RIGHT = 1,
-    UP = 2,
-    LEFT = 3
+    Down = 0,
+    Right = 1,
+    Up = 2,
+    Left = 3
 }

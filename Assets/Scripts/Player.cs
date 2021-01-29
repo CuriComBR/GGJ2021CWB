@@ -1,69 +1,81 @@
+using System;
+using UnityEditor.Animations;
 using UnityEngine;
 
-public class Player : MonoBehaviour
+public class Player : MonoBehaviour, IMovable
 {
     [SerializeField] private float Speed = 1.0f;
-    [SerializeField] private Animator anim;
+    [SerializeField] private Animator Animator;
 
-    private Direction actualDirection;
-    private bool isWalking = false;
-    
-    public enum Direction
+    private Vector3 transformDirection;
+    private Direction facingDirection = Direction.Down;
+
+    private AnimationController animationController;
+
+    private void Awake()
     {
-        DOWN = 0, RIGHT = 1, UP = 2, LEFT = 3
+        animationController = gameObject.AddComponent<AnimationController>();
+        animationController.SetTarget(this);
     }
 
-    void Update()
+    private void Update()
     {
-        var direction = GetDirection();
-        Move(direction);
-        SetIsWalking(!direction.Equals(Vector3.zero));
+        SetDirectionsFromInput();
+        Move(transformDirection);
+    }
+    
+    public bool IsWalking()
+    {
+        return !transformDirection.Equals(Vector3.zero);
+    }
+
+    public Direction GetDirection()
+    {
+        return facingDirection;
+    }
+
+    public Animator GetAnimator()
+    {
+        return Animator;
+    }
+
+    public Transform GetTransform()
+    {
+        return transform;
     }
 
     private void Move(Vector3 direction)
     {
-        transform.position += Time.deltaTime * Speed * direction;
+        transform.position += Time.deltaTime * Speed * direction.normalized;
     }
 
-    private Vector3 GetDirection()
+    private void SetDirectionsFromInput()
     {
-        Vector3 direction = Vector3.zero;
+        transformDirection = Vector3.zero;
         if (Input.GetKey(KeyCode.W))
         {
-            SetDirection(Direction.UP);
-            direction += Vector3.up;
+            ConfigureDirections(Direction.Up, Vector3.up);
         }
 
         if (Input.GetKey(KeyCode.S))
         {
-            SetDirection(Direction.DOWN);
-            direction += Vector3.down;
+            ConfigureDirections(Direction.Down, Vector3.down);
         }
 
         if (Input.GetKey(KeyCode.A))
         {
-            SetDirection(Direction.LEFT);
-            direction += Vector3.left;
+            ConfigureDirections(Direction.Left, Vector3.left);
         }
 
         if (Input.GetKey(KeyCode.D))
         {
-            SetDirection(Direction.RIGHT);
-            direction += Vector3.right;
+            ConfigureDirections(Direction.Right, Vector3.right);
         }
+    }
 
-        return direction;
-    }
-    
-    public void SetDirection(Direction direction)
+    private void ConfigureDirections(Direction facingDirection, Vector3 transformDirection)
     {
-        actualDirection = direction;
-        anim.SetInteger("direction", (int)actualDirection);
-    }
-    
-    public void SetIsWalking(bool isWalking)
-    {
-        this.isWalking = isWalking;
-        anim.SetBool("walking", isWalking);
+        this.facingDirection = facingDirection;
+        this.transformDirection += transformDirection;
     }
 }
