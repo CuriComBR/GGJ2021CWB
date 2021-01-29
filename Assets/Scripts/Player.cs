@@ -13,6 +13,9 @@ public class Player : MonoBehaviour, IMovable
     private AnimationController animationController;
     private MovementController movementController;
 
+    private bool isFrozen;
+    private float releaseTime;
+
     private void Awake()
     {
         animationController = gameObject.AddComponent<AnimationController>();
@@ -22,9 +25,32 @@ public class Player : MonoBehaviour, IMovable
         movementController.SetTarget(this);
     }
 
+    public void Freeze(float freezeTime)
+    {
+        releaseTime = Time.time + freezeTime;
+        isFrozen = true;
+        //Set Animation Freeze
+    }
+
     private void Update()
     {
-        SetDirectionsFromInput();
+        if (!isFrozen)
+        {
+            SetDirectionsFromInput();
+        }
+        else
+        {
+            if (Time.time >= releaseTime)
+            {
+                isFrozen = false;
+                //Unset Freeze animation
+            }
+            else
+            {
+                transformDirection = Vector2.zero;
+            }
+        }
+        
     }
     
     public bool IsWalking()
