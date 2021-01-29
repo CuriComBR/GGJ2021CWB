@@ -57,11 +57,6 @@ public class Player : MonoBehaviour, IMovable
         return Speed;
     }
 
-    private void Move(Vector3 direction)
-    {
-        transform.position += Time.deltaTime * Speed * direction.normalized;
-    }
-
     private void SetDirectionsFromInput()
     {
         transformDirection = Vector3.zero;
