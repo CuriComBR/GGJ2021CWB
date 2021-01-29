@@ -29,7 +29,7 @@ public class Player : MonoBehaviour, IMovable
     {
         releaseTime = Time.time + freezeTime;
         isFrozen = true;
-        //Set Animation Freeze
+        Animator.SetBool("freezed", true);
     }
 
     private void Update()
@@ -43,7 +43,7 @@ public class Player : MonoBehaviour, IMovable
             if (Time.time >= releaseTime)
             {
                 isFrozen = false;
-                //Unset Freeze animation
+                Animator.SetBool("freezed", false);
             }
             else
             {
