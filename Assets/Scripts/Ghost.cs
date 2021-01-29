@@ -26,6 +26,13 @@ public class Ghost : MonoBehaviour, IMovable
         SetDirectionsFromInput();
     }
 
+    private void SetDirectionsFromInput()
+    {
+        transformDirection = Vector3.zero;
+        ConfigureDirections(Direction.Left, Vector3.left);
+    }
+
+
     public bool IsWalking()
     {
         return !transformDirection.Equals(Vector3.zero);
@@ -54,12 +61,6 @@ public class Ghost : MonoBehaviour, IMovable
     public float GetSpeed()
     {
         return Speed;
-    }
-
-    private void SetDirectionsFromInput()
-    {
-        transformDirection = Vector3.zero;
-        ConfigureDirections(Direction.Left, Vector3.left);
     }
 
     private void ConfigureDirections(Direction facingDirection, Vector3 transformDirection)
