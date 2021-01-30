@@ -20,11 +20,12 @@ public class Player : MonoBehaviour, IMovable
     private AnimationController animationController;
     private MovementController movementController;
 
-    private bool isFrozen;
     private float releaseTime;
 
     private Coroutine releaseCoroutine;
 
+    #region LifeCycle
+    
     private void Awake()
     {
         if (shouldInstantiate())
@@ -42,75 +43,20 @@ public class Player : MonoBehaviour, IMovable
 
         stateMachine = new StateMachine();
     }
-
-    private bool shouldInstantiate()
-    {
-        return Instance == null;
-    }
-
-    private void InitializeControllers()
-    {
-        animationController = gameObject.AddComponent<AnimationController>();
-        animationController.SetTarget(this);
-
-        movementController = gameObject.AddComponent<MovementController>();
-        movementController.SetTarget(this);
-    }
-
-    private void InitializeInput()
-    {
-        keys = new Dictionary<KeyCode, Tuple<Vector3, Direction>>();
-        keys.Add(KeyCode.W, Tuple.Create(Vector3.up, Direction.Up));
-        keys.Add(KeyCode.S, Tuple.Create(Vector3.down, Direction.Down));
-        keys.Add(KeyCode.A, Tuple.Create(Vector3.left, Direction.Left));
-        keys.Add(KeyCode.D, Tuple.Create(Vector3.right, Direction.Right));
-    }
-
-    public void Freeze(float freezeTime)
-    {
-        transformDirection = Vector3.zero;
-        if (releaseCoroutine != null)
-        {
-            freezeTime *= 0.85f;
-            StopCoroutine(releaseCoroutine);
-        }
-        releaseCoroutine = StartCoroutine(Release(freezeTime));
-        stateMachine.TransitionTo(new FrozenState(this));
-    }
     
-    private IEnumerator Release(float timeInSeconds)
-    {
-        Animator.SetBool("frozen", true);
-        yield return new WaitForSeconds(timeInSeconds);
-        stateMachine.TransitionTo(new IdleState(this));
-    }
-
-    private bool IsFrozen()
-    {
-        return stateMachine.IsCurrentState(typeof(FrozenState));
-    }
-
     private void Update()
     {
         if (!IsFrozen())
         {
             SetDirectionsFromInput();
         }
-        // else
-        // {
-        //     if (Time.time >= releaseTime)
-        //     {
-        //         isFrozen = false;
-        //         Animator.SetBool("freezed", false);
-        //     }
-        //     else
-        //     {
-        //         transformDirection = Vector3.zero;
-        //     }
-        // }
 
         stateMachine.Tick();
     }
+    
+    #endregion
+
+    #region InterfaceImplementation
 
     public bool IsWalking()
     {
@@ -142,6 +88,64 @@ public class Player : MonoBehaviour, IMovable
         return Speed;
     }
 
+    #endregion
+
+    #region Initialization
+
+    private bool shouldInstantiate()
+    {
+        return Instance == null;
+    }
+
+    private void InitializeControllers()
+    {
+        animationController = gameObject.AddComponent<AnimationController>();
+        animationController.SetTarget(this);
+
+        movementController = gameObject.AddComponent<MovementController>();
+        movementController.SetTarget(this);
+    }
+
+    private void InitializeInput()
+    {
+        keys = new Dictionary<KeyCode, Tuple<Vector3, Direction>>();
+        keys.Add(KeyCode.W, Tuple.Create(Vector3.up, Direction.Up));
+        keys.Add(KeyCode.S, Tuple.Create(Vector3.down, Direction.Down));
+        keys.Add(KeyCode.A, Tuple.Create(Vector3.left, Direction.Left));
+        keys.Add(KeyCode.D, Tuple.Create(Vector3.right, Direction.Right));
+    }
+
+    #endregion
+
+    #region Freezing
+
+    public void Freeze(float freezeTime)
+    {
+        transformDirection = Vector3.zero;
+        if (releaseCoroutine != null)
+        {
+            freezeTime *= 0.85f;
+            StopCoroutine(releaseCoroutine);
+        }
+        releaseCoroutine = StartCoroutine(Release(freezeTime));
+        stateMachine.TransitionTo(new FrozenState(this));
+    }
+    
+    private IEnumerator Release(float timeInSeconds)
+    {
+        yield return new WaitForSeconds(timeInSeconds);
+        stateMachine.TransitionTo(new IdleState(this));
+    }
+
+    private bool IsFrozen()
+    {
+        return stateMachine.IsCurrentState(typeof(FrozenState));
+    }
+
+    #endregion
+
+    #region Moving
+
     private void SetDirectionsFromInput()
     {
         transformDirection = Vector3.zero;
@@ -169,4 +173,6 @@ public class Player : MonoBehaviour, IMovable
         this.facingDirection = facingDirection;
         this.transformDirection += transformDirection;
     }
+
+    #endregion
 }

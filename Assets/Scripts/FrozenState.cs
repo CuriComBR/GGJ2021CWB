@@ -2,20 +2,15 @@
 
 public class FrozenState : State
 {
-
     private Animator animator;
-    
+
     public FrozenState(IMovable context) : base(context) { }
 
-    public override void Tick()
-    {
-        Debug.Log("Frozen!");
-    }
+    public override void Tick() { }
 
     public override void OnEnter()
     {
         animator = context.GetAnimator();
-        animator.SetBool("isWalking", false);
         animator.SetBool("frozen", true);
     }
 
