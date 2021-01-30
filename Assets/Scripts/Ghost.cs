@@ -6,7 +6,9 @@ public class Ghost : MonoBehaviour, IMovable
 {
     [Header("References")]
     [SerializeField] private Animator Animator;
+    [SerializeField] private GameObject vanishEffect;
     private Player player;
+
 
     [Header("General")]
     [SerializeField] private float Speed = 1.0f;
@@ -74,6 +76,7 @@ public class Ghost : MonoBehaviour, IMovable
                 animationController.SetTarget(null);
                 movementController.SetTarget(null);
                 Destroy(gameObject);
+                Instantiate(vanishEffect, transform.position, Quaternion.identity);
             }
             else
             {
