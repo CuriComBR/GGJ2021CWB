@@ -1,3 +1,6 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Player : MonoBehaviour, IMovable
@@ -6,6 +9,10 @@ public class Player : MonoBehaviour, IMovable
     [SerializeField] private Animator Animator;
 
     public static Player Instance;
+
+    private StateMachine stateMachine;
+
+    private Dictionary<KeyCode, Tuple<Vector3, Direction>> keys;
 
     private Vector3 transformDirection;
     private Direction facingDirection = Direction.Down;
@@ -16,18 +23,33 @@ public class Player : MonoBehaviour, IMovable
     private bool isFrozen;
     private float releaseTime;
 
+    private Coroutine releaseCoroutine;
+
     private void Awake()
     {
-        if (Instance == null)
+        if (shouldInstantiate())
         {
             Instance = this;
         }
         else
         {
-            Destroy(this.gameObject);
+            Destroy(gameObject);
             return;
         }
-        
+
+        InitializeControllers();
+        InitializeInput();
+
+        stateMachine = new StateMachine();
+    }
+
+    private bool shouldInstantiate()
+    {
+        return Instance == null;
+    }
+
+    private void InitializeControllers()
+    {
         animationController = gameObject.AddComponent<AnimationController>();
         animationController.SetTarget(this);
 
@@ -35,34 +57,61 @@ public class Player : MonoBehaviour, IMovable
         movementController.SetTarget(this);
     }
 
+    private void InitializeInput()
+    {
+        keys = new Dictionary<KeyCode, Tuple<Vector3, Direction>>();
+        keys.Add(KeyCode.W, Tuple.Create(Vector3.up, Direction.Up));
+        keys.Add(KeyCode.S, Tuple.Create(Vector3.down, Direction.Down));
+        keys.Add(KeyCode.A, Tuple.Create(Vector3.left, Direction.Left));
+        keys.Add(KeyCode.D, Tuple.Create(Vector3.right, Direction.Right));
+    }
+
     public void Freeze(float freezeTime)
     {
-        releaseTime = Time.time + freezeTime;
-        isFrozen = true;
-        Animator.SetBool("freezed", true);
+        transformDirection = Vector3.zero;
+        if (releaseCoroutine != null)
+        {
+            freezeTime *= 0.85f;
+            StopCoroutine(releaseCoroutine);
+        }
+        releaseCoroutine = StartCoroutine(Release(freezeTime));
+        stateMachine.TransitionTo(new FrozenState(this));
+    }
+    
+    private IEnumerator Release(float timeInSeconds)
+    {
+        Animator.SetBool("frozen", true);
+        yield return new WaitForSeconds(timeInSeconds);
+        stateMachine.TransitionTo(new IdleState(this));
+    }
+
+    private bool IsFrozen()
+    {
+        return stateMachine.IsCurrentState(typeof(FrozenState));
     }
 
     private void Update()
     {
-        if (!isFrozen)
+        if (!IsFrozen())
         {
             SetDirectionsFromInput();
         }
-        else
-        {
-            if (Time.time >= releaseTime)
-            {
-                isFrozen = false;
-                Animator.SetBool("freezed", false);
-            }
-            else
-            {
-                transformDirection = Vector2.zero;
-            }
-        }
-        
+        // else
+        // {
+        //     if (Time.time >= releaseTime)
+        //     {
+        //         isFrozen = false;
+        //         Animator.SetBool("freezed", false);
+        //     }
+        //     else
+        //     {
+        //         transformDirection = Vector3.zero;
+        //     }
+        // }
+
+        stateMachine.Tick();
     }
-    
+
     public bool IsWalking()
     {
         return !transformDirection.Equals(Vector3.zero);
@@ -95,29 +144,27 @@ public class Player : MonoBehaviour, IMovable
 
     private void SetDirectionsFromInput()
     {
-        transformDirection = Vector2.zero;
-        if (Input.GetKey(KeyCode.W))
+        transformDirection = Vector3.zero;
+
+        foreach (var keyCode in keys)
         {
-            ConfigureDirections(Direction.Up, Vector3.up);
+            if (Input.GetKey(keyCode.Key))
+            {
+                ConfigureDirections(keyCode.Value.Item1, keyCode.Value.Item2);
+            }
         }
 
-        if (Input.GetKey(KeyCode.S))
+        if (transformDirection.Equals(Vector3.zero))
         {
-            ConfigureDirections(Direction.Down, Vector3.down);
+            stateMachine.TransitionTo(new IdleState(this));
         }
-
-        if (Input.GetKey(KeyCode.A))
+        else
         {
-            ConfigureDirections(Direction.Left, Vector3.left);
-        }
-
-        if (Input.GetKey(KeyCode.D))
-        {
-            ConfigureDirections(Direction.Right, Vector3.right);
+            stateMachine.TransitionTo(new InputWalkingState(this));
         }
     }
 
-    private void ConfigureDirections(Direction facingDirection, Vector3 transformDirection)
+    private void ConfigureDirections(Vector3 transformDirection, Direction facingDirection)
     {
         this.facingDirection = facingDirection;
         this.transformDirection += transformDirection;
