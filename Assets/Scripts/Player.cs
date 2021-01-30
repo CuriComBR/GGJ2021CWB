@@ -1,11 +1,11 @@
-using System;
-using UnityEditor.Animations;
 using UnityEngine;
 
 public class Player : MonoBehaviour, IMovable
 {
     [SerializeField] private float Speed = 1.0f;
     [SerializeField] private Animator Animator;
+
+    public static Player Instance;
 
     private Vector3 transformDirection;
     private Direction facingDirection = Direction.Down;
@@ -18,6 +18,16 @@ public class Player : MonoBehaviour, IMovable
 
     private void Awake()
     {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(this.gameObject);
+            return;
+        }
+        
         animationController = gameObject.AddComponent<AnimationController>();
         animationController.SetTarget(this);
 

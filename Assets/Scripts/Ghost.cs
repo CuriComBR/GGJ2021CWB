@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 
 public class Ghost : MonoBehaviour, IMovable
@@ -7,7 +6,6 @@ public class Ghost : MonoBehaviour, IMovable
     [Header("References")]
     [SerializeField] private Animator Animator;
     [SerializeField] private GameObject vanishEffect;
-    private Player player;
 
 
     [Header("General")]
@@ -20,8 +18,9 @@ public class Ghost : MonoBehaviour, IMovable
     [SerializeField] private bool isPatroling;
     [SerializeField] private Transform[] patrolPoints;
 
-    [Header("Attack Settings")]
-    [SerializeField] private float attackRange = 0.5f;
+    [Header("Attack Settings")] [SerializeField]
+    private float attackRange = 0.5f;
+
     [SerializeField] private float freezeTime = 5f;
 
     private int patrolIndex = 0;
@@ -33,12 +32,22 @@ public class Ghost : MonoBehaviour, IMovable
     private AnimationController animationController;
     private MovementController movementController;
 
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.CompareTag("Player"))
+        {
+            Player.Instance.Freeze(freezeTime);
+            //Attack anim?
+            //Particles
+            animationController.SetTarget(null);
+            movementController.SetTarget(null);
+            Destroy(gameObject);
+            Instantiate(vanishEffect, transform.position, Quaternion.identity);
+        }
+    }
+
     private void Awake()
     {
-        GameObject gameObject = GameObject.FindGameObjectWithTag("Player");
-        if (gameObject)
-            player = gameObject.GetComponent<Player>();
-
         animationController = gameObject.AddComponent<AnimationController>();
         animationController.SetTarget(this);
 
@@ -60,35 +69,22 @@ public class Ghost : MonoBehaviour, IMovable
 
     private void Chase()
     {
-        float distance = Vector2.Distance(transform.position, player.transform.position);
+        float distance = Vector2.Distance(transform.position, Player.Instance.transform.position);
 
-        if(isPatroling && distance > maxRangeChase)
+        if (isPatroling && distance > maxRangeChase)
         {
             Patrol();
         }
         else
         {
-            if(distance <= attackRange)
-            {
-                player.Freeze(freezeTime);
-                //Attack anim?
-                //Particles
-                animationController.SetTarget(null);
-                movementController.SetTarget(null);
-                Destroy(gameObject);
-                Instantiate(vanishEffect, transform.position, Quaternion.identity);
-            }
-            else
-            {
-                Vector2 chaseDirection = player.transform.position - transform.position;
-                ConfigureDirections(GetFacingDirectionByTargetPosition(chaseDirection), chaseDirection.normalized);
-            }
+            Vector2 chaseDirection = Player.Instance.transform.position - transform.position;
+            ConfigureDirections(GetFacingDirectionByTargetPosition(chaseDirection), chaseDirection.normalized);
         }
     }
 
     private void Patrol()
     {
-        if(Vector2.Distance(transform.position, player.transform.position) <= minRangeChase)
+        if (Vector2.Distance(transform.position, Player.Instance.transform.position) <= minRangeChase)
         {
             Chase();
         }
@@ -110,6 +106,7 @@ public class Ghost : MonoBehaviour, IMovable
                 else patrolIndex++;
                 patrolPoint = patrolPoints[patrolIndex];
             }
+
             Vector2 patrolDirection = patrolPoint.position - transform.position;
             ConfigureDirections(GetFacingDirectionByTargetPosition(patrolDirection), patrolDirection.normalized);
         }
@@ -122,11 +119,11 @@ public class Ghost : MonoBehaviour, IMovable
 
         float angle = Vector2.SignedAngle(transform.right, chaseDirection);
 
-        if(angle > -50 && angle < 50)
+        if (angle > -50 && angle < 50)
         {
             fDirection = Direction.Right;
         }
-        else if(angle >= 50 && angle <= 130)
+        else if (angle >= 50 && angle <= 130)
         {
             fDirection = Direction.Up;
         }
