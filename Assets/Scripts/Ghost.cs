@@ -26,23 +26,15 @@ public class Ghost : MonoBehaviour, IMovable
     private int patrolIndex = 0;
     private bool reversePatrol = false;
 
+    private StateMachine stateMachine;
+
     private Vector3 transformDirection;
     private Direction facingDirection = Direction.Down;
 
     private AnimationController animationController;
     private MovementController movementController;
 
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.gameObject.CompareTag("Player"))
-        {
-            Player.Instance.Freeze(freezeTime);
-            animationController.SetTarget(null);
-            movementController.SetTarget(null);
-            Destroy(gameObject);
-            Instantiate(vanishEffect, transform.position, Quaternion.identity);
-        }
-    }
+    #region LifeCycle
 
     private void Awake()
     {
@@ -51,6 +43,8 @@ public class Ghost : MonoBehaviour, IMovable
 
         movementController = gameObject.AddComponent<MovementController>();
         movementController.SetTarget(this);
+
+        stateMachine = new StateMachine();
     }
 
     private void Update()
@@ -64,6 +58,58 @@ public class Ghost : MonoBehaviour, IMovable
             Chase();
         }
     }
+    
+    #endregion
+
+    #region Collision
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.CompareTag("Player"))
+        {
+            Player.Instance.Freeze(freezeTime);
+            animationController.SetTarget(null);
+            movementController.SetTarget(null);
+            Destroy(gameObject);
+            Instantiate(vanishEffect, transform.position, Quaternion.identity);
+        }
+    }
+
+    #endregion
+    
+    #region InterfaceImplementation
+
+    public bool IsWalking()
+    {
+        return !transformDirection.Equals(Vector3.zero);
+    }
+
+    public Direction GetFacingDirection()
+    {
+        return facingDirection;
+    }
+
+    public Vector3 GetTransformDirection()
+    {
+        return transformDirection;
+    }
+
+    public Animator GetAnimator()
+    {
+        return Animator;
+    }
+
+    public Transform GetTransform()
+    {
+        return transform;
+    }
+
+    public float GetSpeed()
+    {
+        return Speed;
+    }
+
+    #endregion
 
     private void Chase()
     {
@@ -109,8 +155,7 @@ public class Ghost : MonoBehaviour, IMovable
             ConfigureDirections(GetFacingDirectionByTargetPosition(patrolDirection), patrolDirection.normalized);
         }
     }
-
-
+    
     private Direction GetFacingDirectionByTargetPosition(Vector2 chaseDirection)
     {
         Direction fDirection = Direction.Down;
@@ -136,37 +181,7 @@ public class Ghost : MonoBehaviour, IMovable
 
         return fDirection;
     }
-
-    public bool IsWalking()
-    {
-        return !transformDirection.Equals(Vector3.zero);
-    }
-
-    public Direction GetFacingDirection()
-    {
-        return facingDirection;
-    }
-
-    public Vector3 GetTransformDirection()
-    {
-        return transformDirection;
-    }
-
-    public Animator GetAnimator()
-    {
-        return Animator;
-    }
-
-    public Transform GetTransform()
-    {
-        return transform;
-    }
-
-    public float GetSpeed()
-    {
-        return Speed;
-    }
-
+    
     private void ConfigureDirections(Direction facingDirection, Vector3 transformDirection)
     {
         this.facingDirection = facingDirection;

@@ -20,9 +20,6 @@ public class Player : MonoBehaviour, IMovable
     private Vector3 transformDirection;
     private Direction facingDirection = Direction.Down;
 
-    private AnimationController animationController;
-    private MovementController movementController;
-
     private float releaseTime;
 
     private bool interacted = false;
@@ -43,7 +40,6 @@ public class Player : MonoBehaviour, IMovable
             return;
         }
 
-        InitializeControllers();
         InitializeInput();
 
         stateMachine = new StateMachine();
@@ -166,15 +162,6 @@ public class Player : MonoBehaviour, IMovable
     private bool shouldInstantiate()
     {
         return Instance == null;
-    }
-
-    private void InitializeControllers()
-    {
-        animationController = gameObject.AddComponent<AnimationController>();
-        animationController.SetTarget(this);
-
-        movementController = gameObject.AddComponent<MovementController>();
-        movementController.SetTarget(this);
     }
 
     private void InitializeInput()

@@ -10,14 +10,14 @@ public class InputWalkingState : State
     {
         Transform contextTransform = context.GetTransform();
         contextTransform.position += Time.deltaTime * context.GetSpeed() * context.GetTransformDirection().normalized;
+        int facingDirection = (int) context.GetFacingDirection();
+        if (animator.GetInteger("direction") != facingDirection) animator.SetInteger("direction", facingDirection);
     }
 
     public override void OnEnter()
     {
         animator = context.GetAnimator();
-        int facingDirection = (int) context.GetFacingDirection();
         animator.SetBool("isWalking", true);
-        animator.SetInteger("direction", facingDirection);
     }
 
     public override void OnExit()
