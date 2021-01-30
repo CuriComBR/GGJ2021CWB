@@ -37,8 +37,6 @@ public class Ghost : MonoBehaviour, IMovable
         if (other.gameObject.CompareTag("Player"))
         {
             Player.Instance.Freeze(freezeTime);
-            //Attack anim?
-            //Particles
             animationController.SetTarget(null);
             movementController.SetTarget(null);
             Destroy(gameObject);

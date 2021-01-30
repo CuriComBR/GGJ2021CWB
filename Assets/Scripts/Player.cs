@@ -2,11 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour, IMovable
 {
     [SerializeField] private float Speed = 1.0f;
     [SerializeField] private Animator Animator;
+
+    [SerializeField] private GameObject interactionPopup;
 
     public static Player Instance;
 
@@ -21,6 +24,8 @@ public class Player : MonoBehaviour, IMovable
     private MovementController movementController;
 
     private float releaseTime;
+
+    private bool interacted = false;
 
     private Coroutine releaseCoroutine;
 
@@ -49,11 +54,77 @@ public class Player : MonoBehaviour, IMovable
         if (!IsFrozen())
         {
             SetDirectionsFromInput();
+            CheckInteractbles();
         }
 
         stateMachine.Tick();
     }
-    
+
+    private void CheckInteractbles()
+    {
+        RaycastHit2D hit;
+        hit = Physics2D.Raycast(transform.position, GetDirectionRayFromFacingDirection(), 0.6f);
+
+        if (hit)
+        {
+            if (hit.collider.CompareTag("Interactable"))
+            {
+                if (!interacted)
+                {
+                    interactionPopup.transform.position = Camera.main.WorldToScreenPoint(transform.position);
+                    interactionPopup.SetActive(true);
+                }
+
+                if (Input.GetKeyDown(KeyCode.F))
+                {
+                    interacted = true;
+                    Interactable interacable = hit.collider.GetComponent<Interactable>();
+                    interacable.Interact();
+                    interactionPopup.SetActive(false);
+                }
+            }
+            else
+            {
+                interacted = false;
+                interactionPopup.SetActive(false);
+            }
+        }
+        else
+        {
+            interacted = false;
+            interactionPopup.SetActive(false);
+        }
+       
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawRay(transform.position, GetDirectionRayFromFacingDirection() * 0.6f);
+    }
+
+    private Vector2 GetDirectionRayFromFacingDirection()
+    {
+        Vector2 directionRay = Vector2.zero;
+        switch (facingDirection)
+        {
+            case Direction.Down:
+                directionRay = Vector2.down;
+                break;
+            case Direction.Right:
+                directionRay = Vector2.right;
+                break;
+            case Direction.Up:
+                directionRay = Vector2.up;
+                break;
+            case Direction.Left:
+                directionRay = Vector2.left;
+                break;
+        }
+
+        return directionRay;
+    }
+
     #endregion
 
     #region InterfaceImplementation

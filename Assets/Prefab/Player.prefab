@@ -48,6 +48,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Speed: 2
   Animator: {fileID: 5609781608089876801}
+  interactionPopup: {fileID: 0}
 --- !u!70 &3080447749888463667
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -84,7 +85,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!1 &5609781608620590992
 GameObject:
   m_ObjectHideFlags: 0
@@ -178,7 +179,7 @@ Animator:
   m_GameObject: {fileID: 5609781608620590992}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 600e08cabd2ab465db59eeeebe3f229b, type: 2}
+  m_Controller: {fileID: 0}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
