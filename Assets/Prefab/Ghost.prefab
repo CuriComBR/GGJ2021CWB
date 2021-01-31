@@ -47,7 +47,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Animator: {fileID: 8220719061670175021}
-  vanishEffect: {fileID: 2825100496156173260, guid: 8381642b6ec1a434ebe608d8a002033a, type: 3}
+  vanishEffect: {fileID: 2825100496156173260, guid: 8381642b6ec1a434ebe608d8a002033a,
+    type: 3}
   Speed: 1
   patrolRadius: 1
   minRangeChase: 8
@@ -167,8 +168,9 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
-  m_Sprite: {fileID: 1205868866586659964, guid: beab2f781614c4f418bc9519302f10ea, type: 3}
+  m_SortingOrder: 17
+  m_Sprite: {fileID: 1205868866586659964, guid: beab2f781614c4f418bc9519302f10ea,
+    type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
