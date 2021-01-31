@@ -7,7 +7,6 @@ public class Ghost : MonoBehaviour, IMovable
     [SerializeField] private Animator Animator;
     [SerializeField] private GameObject vanishEffect;
 
-
     [Header("General")]
     [SerializeField] private float Speed = 1.0f;
     
@@ -19,6 +18,10 @@ public class Ghost : MonoBehaviour, IMovable
     [SerializeField] private Transform[] patrolPoints;
 
     [SerializeField] private float freezeTime = 5f;
+
+    [SerializeField] private AudioClip groomingSound;
+
+    private AudioSource audioSource;
 
     private int patrolIndex = 0;
     private bool reversePatrol = false;
@@ -42,6 +45,10 @@ public class Ghost : MonoBehaviour, IMovable
         movementController.SetTarget(this);
 
         stateMachine = new StateMachine();
+
+        audioSource = GetComponent<AudioSource>();
+
+        InvokeRepeating("PlayGroomingSound", Random.Range(0f, 2f), Random.Range(1, 3f));
     }
 
     private void Update()
@@ -121,6 +128,12 @@ public class Ghost : MonoBehaviour, IMovable
             Vector2 chaseDirection = Player.instance.transform.position - transform.position;
             ConfigureDirections(GetFacingDirectionByTargetPosition(chaseDirection), chaseDirection.normalized);
         }
+    }
+
+    private void PlayGroomingSound()
+    {
+        audioSource.clip = groomingSound;
+        audioSource.Play();
     }
 
     private void Patrol()

@@ -21,11 +21,13 @@ public class GameManager : MonoBehaviour
 
     public AudioClip winSound;
     public AudioClip loseSound;
+    public AudioClip timeEndingSound;
 
     private float remainingTime;
     private float endTime;
 
     private bool gameOver = false;
+    private bool timeEnding = false;
 
     void Awake()
     {
@@ -45,9 +47,22 @@ public class GameManager : MonoBehaviour
             remainingTime = endTime - Time.time;
             timer.text = TimeSpan.FromSeconds(remainingTime).ToString("mm\\:ss");
             CheckVictory();
+
+            if(remainingTime <= 11 && !timeEnding)
+            {
+                timeEnding = true;
+                timer.color = Color.red;
+                InvokeRepeating("PlayEndingSound", 0, 1f);
+            }
         }
        
         pills.text = Inventory.instance.pillsCount.ToString();
+    }
+
+    private void PlayEndingSound()
+    {
+        audioSource.clip = timeEndingSound;
+        audioSource.Play();
     }
 
     private IEnumerator PlaySound(AudioClip audioClip,float delayTime)
@@ -61,6 +76,7 @@ public class GameManager : MonoBehaviour
     {
         if(remainingTime <= 0)
         {
+            CancelInvoke("PlayEndingSound");
             gameSource.Stop();
             gameOver = true;
             Lose();
@@ -69,6 +85,7 @@ public class GameManager : MonoBehaviour
         {
             if(Inventory.instance.pillsCount == goalNumberOfPills)
             {
+                CancelInvoke("PlayEndingSound");
                 gameSource.Stop();
                 gameOver = true;
                 Win();
