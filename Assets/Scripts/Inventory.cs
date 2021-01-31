@@ -28,7 +28,7 @@ public class Inventory : MonoBehaviour
 
     private IEnumerator PlaySound(AudioClip audioClip)
     {
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(0.5f);
         audioSource.clip = audioClip;
         audioSource.Play();
     }
@@ -42,19 +42,19 @@ public class Inventory : MonoBehaviour
 
     public void AddPill()
     {
-        PlaySound(pillSound);
+        StartCoroutine(PlaySound(pillSound));
         pillsCount++;
     }
 
     public void AddCross()
     {
-        PlaySound(crossSound);
+        StartCoroutine(PlaySound(crossSound));
         pillsCount++;
     }
 
     public void AddHolyWater()
     {
-        PlaySound(waterSound);
+        StartCoroutine(PlaySound(waterSound));
         pillsCount++;
     }
 }

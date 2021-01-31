@@ -11,6 +11,8 @@ public class Interactable : MonoBehaviour
     [SerializeField] public bool hasPill;
     [SerializeField] public bool playDialogOnStart;
 
+    private AudioSource audioSource;
+
     public Dialogue dialogue;
     //Posição para aonde a porta vão levar o jogador
     public float portalX = 0;
@@ -30,12 +32,14 @@ public class Interactable : MonoBehaviour
     void Awake()
     {
         frase = dialogue.setences[0];
+        audioSource = GetComponent<AudioSource>();
     }
 
     private void Start()
     {
         if (playDialogOnStart)
         {
+            Player.instance.Lock();
             DialogInteraction();
         }
     }
@@ -90,6 +94,10 @@ public class Interactable : MonoBehaviour
 
     private void DialogInteraction()
     {
+        if (playDialogOnStart)
+        {
+            audioSource.Play();
+        }
         FindObjectOfType<DialogueManager>().StarDialogue(dialogue);
     }
 }

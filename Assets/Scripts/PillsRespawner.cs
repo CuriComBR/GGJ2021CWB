@@ -27,9 +27,10 @@ public class PillsRespawner : MonoBehaviour
 
     public void ShufflePills(int numberOfPills)
     {
+        int toalPills = numberOfPills * 2;
         List<int> sortedList = new List<int>();
        
-        while(sortedList.Count < numberOfPills)
+        while(sortedList.Count < toalPills)
         {
             int randomNumber = Random.Range(0, interactables.Count);
             if (!sortedList.Contains(randomNumber))

@@ -16,6 +16,12 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Text timer;
     [SerializeField] private Text pills;
 
+    public AudioSource audioSource;
+    public AudioSource gameSource;
+
+    public AudioClip winSound;
+    public AudioClip loseSound;
+
     private float remainingTime;
     private float endTime;
 
@@ -44,10 +50,18 @@ public class GameManager : MonoBehaviour
         pills.text = Inventory.instance.pillsCount.ToString();
     }
 
+    private IEnumerator PlaySound(AudioClip audioClip,float delayTime)
+    {
+        yield return new WaitForSeconds(delayTime);
+        audioSource.clip = audioClip;
+        audioSource.Play();
+    }
+
     private void CheckVictory()
     {
         if(remainingTime <= 0)
         {
+            gameSource.Stop();
             gameOver = true;
             Lose();
         }
@@ -55,6 +69,7 @@ public class GameManager : MonoBehaviour
         {
             if(Inventory.instance.pillsCount == goalNumberOfPills)
             {
+                gameSource.Stop();
                 gameOver = true;
                 Win();
             }
@@ -64,19 +79,19 @@ public class GameManager : MonoBehaviour
     public void Win()
     {
         Player.instance.Lock();
-        //Anim song
-        Invoke("GoToNextLevel", 8f);
+        StartCoroutine(PlaySound(winSound, 2f));
+        StartCoroutine(GoToNextLevel());
     }
 
     public void Lose()
     {
-        //Lose song
-        Invoke("RestartLevel", 5f);
+        StartCoroutine(PlaySound(loseSound, 0));
+        StartCoroutine(RestartLevel());
     }
 
-
-    public void GoToNextLevel()
+    public IEnumerator GoToNextLevel()
     {
+        yield return new WaitForSeconds(8);
         int nextSceneIndex = SceneManager.GetActiveScene().buildIndex + 1;
         if (SceneManager.sceneCountInBuildSettings > nextSceneIndex)
         {
@@ -84,8 +99,9 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void RestartLevel()
+    public IEnumerator RestartLevel()
     {
+        yield return new WaitForSeconds(5);
         int level = SceneManager.GetActiveScene().buildIndex;
         SceneManager.LoadScene(level);
     }
