@@ -75,6 +75,7 @@ MonoBehaviour:
   gameSource: {fileID: 6294062050832228894}
   winSound: {fileID: 8300000, guid: 4639eb7e345044a46a31bd1988b49120, type: 3}
   loseSound: {fileID: 8300000, guid: 4ba8adbdf5c057c41a9e1b878b17a68b, type: 3}
+  timeEndingSound: {fileID: 8300000, guid: 7c3f9e3a52a892346820343de1e6023a, type: 3}
 --- !u!82 &4483966154027406594
 AudioSource:
   m_ObjectHideFlags: 0
