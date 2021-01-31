@@ -11,16 +11,24 @@ public class Player : MonoBehaviour, IMovable
 
     [SerializeField] private GameObject interactionPopup;
 
-    public static Player Instance;
+    [SerializeField] private AudioClip interactionSound;
+
+    [SerializeField] private AudioSource sourceSteps;
+    [SerializeField] private AudioSource sourceOtherSounds;
+
+
+
+    public static Player instance;
 
     private StateMachine stateMachine;
 
     private Dictionary<KeyCode, Tuple<Vector3, Direction>> keys;
 
     private Vector3 transformDirection;
-    private Direction facingDirection = Direction.Down;
 
-    private float releaseTime;
+    private bool isLocked;
+
+    private Direction facingDirection = Direction.Down;
 
     private bool interacted = false;
 
@@ -32,7 +40,7 @@ public class Player : MonoBehaviour, IMovable
     {
         if (shouldInstantiate())
         {
-            Instance = this;
+            instance = this;
         }
         else
         {
@@ -47,13 +55,31 @@ public class Player : MonoBehaviour, IMovable
     
     private void Update()
     {
-        if (!IsFrozen())
+        if (!IsFrozen() && !isLocked)
         {
             SetDirectionsFromInput();
             CheckInteractbles();
         }
 
+        if(transformDirection != Vector3.zero)
+        {
+            if (!sourceSteps.isPlaying)
+            {
+                sourceSteps.Play();
+            }
+        }
+        else
+        {
+            sourceSteps.Stop();
+        }
+
         stateMachine.Tick();
+    }
+
+    private void PlaySound(AudioClip audioClip)
+    {
+        sourceOtherSounds.clip = audioClip;
+        sourceOtherSounds.Play();
     }
 
     private void CheckInteractbles()
@@ -73,6 +99,7 @@ public class Player : MonoBehaviour, IMovable
 
                 if (Input.GetKeyDown(KeyCode.F))
                 {
+                    PlaySound(interactionSound);
                     interacted = true;
                     Interactable interacable = hit.collider.GetComponent<Interactable>();
                     interacable.Interact();
@@ -91,6 +118,16 @@ public class Player : MonoBehaviour, IMovable
             interactionPopup.SetActive(false);
         }
        
+    }
+
+    internal void Lock()
+    {
+        isLocked = true;
+    }
+
+    internal void Unlock()
+    {
+        isLocked = false;
     }
 
     private void OnDrawGizmos()
@@ -161,7 +198,7 @@ public class Player : MonoBehaviour, IMovable
 
     private bool shouldInstantiate()
     {
-        return Instance == null;
+        return instance == null;
     }
 
     private void InitializeInput()
